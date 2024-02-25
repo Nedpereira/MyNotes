@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/NDocs/static/css/main.e4e6a809.css",
+    "main.js": "/NDocs/static/js/main.7bf4667b.js",
+    "static/js/453.ca3cd186.chunk.js": "/NDocs/static/js/453.ca3cd186.chunk.js",
+    "static/media/logo_NDocs.png": "/NDocs/static/media/logo_NDocs.5c5a3e4e35ac953dea21.png",
+    "index.html": "/NDocs/index.html",
+    "main.e4e6a809.css.map": "/NDocs/static/css/main.e4e6a809.css.map",
+    "main.7bf4667b.js.map": "/NDocs/static/js/main.7bf4667b.js.map",
+    "453.ca3cd186.chunk.js.map": "/NDocs/static/js/453.ca3cd186.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e4e6a809.css",
+    "static/js/main.7bf4667b.js"
+  ]
+}
