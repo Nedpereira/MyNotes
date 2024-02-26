@@ -17,7 +17,7 @@ function Home() {
   const username = "Nedpereira";
   const repository = "Documentacao_NDocs";
   const docsPath = "Docs";
-  const token = "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";
+  const apiKey = process.env.REACT_APP_API_KEY;
 
   const formatNameForDisplay = (filename) => {
     return filename
@@ -32,7 +32,7 @@ function Home() {
     const listUrl = `https://api.github.com/repos/${username}/${repository}/contents/${docsPath}`;
     fetch(listUrl, {
       headers: new Headers({
-        Authorization: `token ${token}`,
+        Authorization: `token ${apiKey}`,
         Accept: "application/vnd.github.v3.raw",
       }),
     })
@@ -68,7 +68,7 @@ function Home() {
     const contentUrl = `https://api.github.com/repos/${username}/${repository}/contents/${docsPath}/${nomeCardEscolhido}`;
     fetch(contentUrl, {
       headers: new Headers({
-        Authorization: `token ${token}`,
+        Authorization: `token ${apiKey}`,
         Accept: "application/vnd.github.v3.raw",
       }),
     })
