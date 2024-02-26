@@ -40,7 +40,7 @@ function Home() {
       .then((files) => {
         setDocsList(files);
       });
-  }, []);
+  }, [apiKey]);
 
   useEffect(() => {
     if (selectedDoc) {
@@ -89,8 +89,6 @@ function Home() {
   const copyToClipboard = (text) => {
     console.log("Copiado para a área de transferência: ", text);
   };
-
-  console.log('markdownContent', markdownContent)
 
   return (
     <div>
