@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./home.css";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
@@ -54,17 +54,13 @@ function Home() {
     }
   }, [selectedDoc, docsList]);
 
-  const obterDocumentacao = (nome) => {;
+  const obterDocumentacao = (nome) => {
     setNomeCardEscolhido(nome);
   };
 
-  useEffect(() => {
-    if (nomeCardEscolhido) {
-      fetchMarkdownContent();
-    }
-  }, [nomeCardEscolhido]);
+  const fetchMarkdownContent = useCallback(() => {
+    if (!nomeCardEscolhido) return;
 
-  const fetchMarkdownContent = () => {
     const contentUrl = `https://api.github.com/repos/${username}/${repository}/contents/${docsPath}/${nomeCardEscolhido}`;
     fetch(contentUrl, {
       headers: new Headers({
@@ -76,7 +72,11 @@ function Home() {
       .then((text) => {
         setMarkdownContent(text);
       });
-  };
+  }, [apiKey, nomeCardEscolhido, username, repository, docsPath]);
+
+  useEffect(() => {
+    fetchMarkdownContent();
+  }, [fetchMarkdownContent]);
 
   const formatCodeBlocks = (text) => {
     const formattedText = text.replace(
