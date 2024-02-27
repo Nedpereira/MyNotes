@@ -24,7 +24,7 @@ function Home() {
       .replace(/-/g, " ")
       .replace(/.md/, "")
       .split(" ")
-      .map((word) => word.charAt(0).toLowerCase() + word.slice(1).toLowerCase())
+      .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
       .join(" ");
   };
 
@@ -91,24 +91,37 @@ function Home() {
   };
 
   return (
-    <div>
+    <div className="content_body">
       <div className="div-logo">
         <img className={"logo"} src={logo} alt="logo tipo NDocs" />
       </div>
       <div className="main">
-        <div className="main_card">
+        <div className="div-titulo-cards">
           <p className="titulo-card">Documentações Relacionadas</p>
-          {filteredDocs?.map((doc) => (
-            <div
-              key={doc.name}
-              className="card"
-              onClick={() => obterDocumentacao(doc.name)}
-            >
-              <p className="texto_card">{formatNameForDisplay(doc.name)}</p>
-            </div>
-          ))}
+          <div className="main_card">
+            {filteredDocs?.map((doc) => (
+              <div
+                key={doc.name}
+                className="card"
+                onClick={() => obterDocumentacao(doc.name)}
+              >
+                <p className="texto_card">{formatNameForDisplay(doc.name)}</p>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="div-documentacao-buscar">
+          <div className="div-buscar">
+            <input
+              className="input-buscar"
+              value={selectedDoc}
+              onChange={(e) => setSelectedDoc(e.target.value)}
+              placeholder="Digite para pesquisar..."
+            />
+            <SearchIcon
+              sx={{ fontSize: "30px", color: "white", marginRight: "5px" }}
+            />
+          </div>
           <div className="documentacao">
             <ReactMarkdown
               remarkPlugins={[gfm]}
@@ -155,18 +168,6 @@ function Home() {
               {formatCodeBlocks(markdownContent) ||
                 "Escolha uma documentação..."}
             </ReactMarkdown>
-          </div>
-
-          <div className="div-buscar">
-            <SearchIcon
-              sx={{ fontSize: "30px", color: "white", marginRight: "5px" }}
-            />
-            <input
-              className="input-buscar"
-              value={selectedDoc}
-              onChange={(e) => setSelectedDoc(e.target.value)}
-              placeholder="Digite para pesquisar..."
-            />
           </div>
         </div>
       </div>
