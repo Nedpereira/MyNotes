@@ -46,7 +46,7 @@ function Home() {
     if (selectedDoc) {
       const searchTerms = selectedDoc?.toLowerCase().split(" ");
       const filtered = docsList?.filter((doc) =>
-        searchTerms.every((term) => doc.name.toLowerCase().includes(term))
+        searchTerms?.every((term) => doc.name.toLowerCase().includes(term))
       );
       setFilteredDocs(filtered);
     } else {
@@ -79,7 +79,7 @@ function Home() {
   }, [fetchMarkdownContent]);
 
   const formatCodeBlocks = (text) => {
-    const formattedText = text.replace(
+    const formattedText = text?.replace(
       /algum padrão de regex/g,
       "```\n$&\n```"
     );
@@ -98,7 +98,7 @@ function Home() {
       <div className="main">
         <div className="main_card">
           <p className="titulo-card">Documentações Relacionadas</p>
-          {filteredDocs.map((doc) => (
+          {filteredDocs?.map((doc) => (
             <div
               key={doc.name}
               className="card"
