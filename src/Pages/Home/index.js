@@ -2,10 +2,15 @@ import React, { useCallback, useEffect, useState } from "react";
 import "./home.css";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
+import "github-markdown-css";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import SearchIcon from "@mui/icons-material/Search";
 import logo from "../../Assets/Logo/logo_NDocs.png";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.css";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 
 function Home() {
   const [selectedDoc, setSelectedDoc] = useState("");
@@ -13,6 +18,7 @@ function Home() {
   const [filteredDocs, setFilteredDocs] = useState([]);
   const [nomeCardEscolhido, setNomeCardEscolhido] = useState("");
   const [markdownContent, setMarkdownContent] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   const username = "Nedpereira";
   const repository = "Documentacao_NDocs";
@@ -86,18 +92,38 @@ function Home() {
     return formattedText;
   };
 
-  const copyToClipboard = (text) => {
-    console.log("Copiado para a área de transferência: ", text);
+  const handleCopyCode = (code) => {
+    navigator.clipboard.writeText(code);
+    setShowAlert(true);
   };
+
+  useEffect(() => {
+    hljs.highlightAll();
+  }, []);
 
   return (
     <div className="content_body">
-      <div className="div-logo">
-        <img className={"logo"} src={logo} alt="logo tipo NDocs" />
-      </div>
+      <Snackbar
+        open={showAlert}
+        autoHideDuration={1000}
+        onClose={() => setShowAlert(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          onClose={() => setShowAlert(false)}
+          severity="success"
+        >
+          Copiado com sucesso!
+        </MuiAlert>
+      </Snackbar>
       <div className="main">
         <div className="div-titulo-cards">
-          <p className="titulo-card">Documentações Relacionadas</p>
+          <div className="div-logo-titulo-card">
+            <img className={"logo"} src={logo} alt="logo tipo NDocs" />
+            <p className="titulo-card">Documentações Relacionadas</p>
+          </div>
           <div className="main_card">
             {filteredDocs?.map((doc) => (
               <div
@@ -116,16 +142,27 @@ function Home() {
               className="input-buscar"
               value={selectedDoc}
               onChange={(e) => setSelectedDoc(e.target.value)}
-              placeholder="Digite para pesquisar..."
+              placeholder="Digite para pesquisar ou '-' para listar tudo..."
             />
             <SearchIcon
-              sx={{ fontSize: "30px", color: "white", marginRight: "5px" }}
+              className="searchIcon"
+              sx={{
+                fontSize: "25px",
+                color: "white",
+                marginLeft: "5px",
+              }}
             />
           </div>
           <div className="documentacao">
             <ReactMarkdown
+              className="markdown-body"
               remarkPlugins={[gfm]}
               components={{
+                a: ({ node, ...props }) => (
+                  <a {...props} target="_blank" rel="noopener noreferrer">
+                    {props.children}
+                  </a>
+                ),
                 p({ node, children, ...props }) {
                   if (
                     node.children.length === 1 &&
@@ -135,6 +172,7 @@ function Home() {
                   }
                   return <div {...props}>{children}</div>;
                 },
+
                 code({ node, inline, className, children, ...props }) {
                   if (!inline) {
                     return (
@@ -142,7 +180,7 @@ function Home() {
                         <CopyToClipboard
                           text={String(children).replace(/\n$/, "")}
                           onCopy={() =>
-                            copyToClipboard(String(children).replace(/\n$/, ""))
+                            handleCopyCode(String(children).replace(/\n$/, ""))
                           }
                         >
                           <button className="code-button">
@@ -152,16 +190,17 @@ function Home() {
                             />
                           </button>
                         </CopyToClipboard>
-                        <code className={className}>{children}</code>
+                        <pre className={className}>
+                          <code {...props}>{children}</code>
+                        </pre>
                       </div>
                     );
-                  } else {
-                    return (
-                      <code className={className} {...props}>
-                        {children}
-                      </code>
-                    );
                   }
+                  return (
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  );
                 },
               }}
             >

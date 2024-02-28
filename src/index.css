@@ -42,3 +42,15 @@ code {
 ::-webkit-scrollbar-track:hover {
   background: #e1e1e1;
 }
+
+a {
+  text-decoration: none;
+}
+
+a:visited {
+  color: #3587ca;
+}
+
+a:hover {
+  color: #1c629b;
+}
