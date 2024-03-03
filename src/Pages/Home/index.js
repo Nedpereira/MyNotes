@@ -6,7 +6,6 @@ import "github-markdown-css";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import SearchIcon from "@mui/icons-material/Search";
-import logo from "../../Assets/Logo/logo_NDocs.png";
 import hljs from "highlight.js";
 import "highlight.js/styles/github.css";
 import Snackbar from "@mui/material/Snackbar";
