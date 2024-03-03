@@ -11,6 +11,8 @@ import hljs from "highlight.js";
 import "highlight.js/styles/github.css";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import runChat from "../../Api/Run-Chat";
+import FormatMessage from "../../Helpers/Format-Message";
 
 function Home() {
   const [selectedDoc, setSelectedDoc] = useState("");
@@ -24,15 +26,6 @@ function Home() {
   const repository = "Documentacao_NDocs";
   const docsPath = "Docs";
   const apiKey = process.env.REACT_APP_API_KEY;
-
-  const formatNameForDisplay = (filename) => {
-    return filename
-      .replace(/-/g, " ")
-      .replace(/.md/, "")
-      .split(" ")
-      .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
-      .join(" ");
-  };
 
   useEffect(() => {
     const listUrl = `https://api.github.com/repos/${username}/${repository}/contents/${docsPath}`;
@@ -101,6 +94,10 @@ function Home() {
     hljs.highlightAll();
   }, []);
 
+  useEffect(() => {
+    runChat();
+  },[])
+
   return (
     <div className="content_body">
       <Snackbar
@@ -121,7 +118,6 @@ function Home() {
       <div className="main">
         <div className="div-titulo-cards">
           <div className="div-logo-titulo-card">
-            <img className={"logo"} src={logo} alt="logo tipo NDocs" />
             <p className="titulo-card">Documentações Relacionadas</p>
           </div>
           <div className="main_card">
@@ -131,7 +127,7 @@ function Home() {
                 className="card"
                 onClick={() => obterDocumentacao(doc.name)}
               >
-                <p className="texto_card">{formatNameForDisplay(doc.name)}</p>
+                <p className="texto_card">{FormatMessage(doc.name)}</p>
               </div>
             ))}
           </div>
