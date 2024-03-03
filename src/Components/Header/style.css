@@ -1,0 +1,27 @@
+.header {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px;
+}
+
+.content-navegar {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.espaço {
+  color: white;
+  margin: 0 10px;
+  font-weight: bolder;
+}
+
+.navegar {
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.navegar:hover {
+  color: aqua;
+}
