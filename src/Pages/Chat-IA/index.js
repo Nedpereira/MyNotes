@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import runChat from "../../Api/Run-Chat";
 import "./style.css";
 import formatMessage from "../../Helpers/Format-Message";
@@ -72,14 +72,14 @@ function ChatIA() {
     }
   };
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     setMessages([]);
     stopAnimation();
     setChatHistory([]);
     setOpenSnackBar(true);
     setSeverity("info");
-    setMessageSnackBar("Messagens deletadas!");
-  };
+    setMessageSnackBar("Mensagens deletadas!");
+  }, [setMessages, setChatHistory, setOpenSnackBar, setSeverity, setMessageSnackBar]);
 
   const playAnimation = () => {
     setIsStopped(false);
@@ -112,7 +112,7 @@ function ChatIA() {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [handleClear]);
 
   return (
     <div className="chat-container">
