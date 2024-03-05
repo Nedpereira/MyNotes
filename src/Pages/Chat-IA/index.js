@@ -14,6 +14,7 @@ function ChatIA() {
   const [isStopped, setIsStopped] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
 
+  const [chatHistory, setChatHistory] = useState([]);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [messageSnackBar, setMessageSnackBar] = useState("");
   const [severity, setSeverity] = useState("");
@@ -30,19 +31,24 @@ function ChatIA() {
   const sendMessage = async () => {
     playAnimation();
     if (!userInput.trim()) return;
+
+    const userMessage = { text: userInput, role: "user" };
+    const updatedChatHistory = [...chatHistory, userMessage];
+
     const newMessage = { id: Date.now(), text: userInput, sender: "user" };
     setMessages([...messages, newMessage]);
+    setChatHistory(updatedChatHistory);
 
     try {
-      const response = await runChat(userInput);
+      const response = await runChat(userInput, updatedChatHistory);
       if (response) {
-        const replyMessage = {
-          id: Date.now(),
-          text: response,
-          sender: "api",
-        };
+        const replyMessage = { text: response, role: "api" };
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { id: Date.now(), text: response, sender: "api" },
+        ]);
+        setChatHistory((prevHistory) => [...prevHistory, replyMessage]);
         stopAnimation();
-        setMessages((currentMessages) => [...currentMessages, replyMessage]);
       }
     } catch (error) {
       stopAnimation();
@@ -69,6 +75,7 @@ function ChatIA() {
   const handleClear = () => {
     setMessages([]);
     stopAnimation();
+    setChatHistory([]);
     setOpenSnackBar(true);
     setSeverity("info");
     setMessageSnackBar("Messagens deletadas!");
@@ -92,6 +99,20 @@ function ChatIA() {
   const handleCloseSnackbar = () => {
     setOpenSnackBar(false);
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Delete") {
+        handleClear();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <div className="chat-container">
