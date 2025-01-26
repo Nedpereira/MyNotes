@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "title": "Como configurar o Git",
+    "content": "## Passo 1: Instale o Git\n\nFaça o download do Git em [git-scm.com](https://git-scm.com/).\n\n## Passo 2: Configure seu usuário\n\n```bash\ngit config --global user.name \"Seu Nome\"\ngit config --global user.email \"seu@email.com\"\n```\n\n## Passo 3: Inicialize um repositório\n\n```bash\ngit init\n```"
+  },
+  {
+    "id": 2,
+    "title": "Como criar um repositório no GitHub",
+    "content": "## Passo 1: Crie uma conta no GitHub\n\nVisite [github.com](https://github.com/) e crie sua conta.\n\n## Passo 2: Novo Repositório\n\n1. Clique no botão '+' no canto superior direito\n2. Selecione 'New repository'\n3. Preencha as informações\n4. Clique em 'Create repository'\n\n## Passo 3: Clone o repositório\n\n```bash\ngit clone https://github.com/seu-usuario/seu-repo.git\n```"
+  },
+  {
+    "id": 3,
+    "title": "Comandos básicos do Terminal",
+    "content": "# Comandos Essenciais do Terminal\n\n## Navegação\n\n- `ls` - Listar arquivos\n- `cd` - Mudar diretório\n- `pwd` - Mostrar diretório atual\n\n## Manipulação de Arquivos\n\n- `touch` - Criar arquivo\n- `mkdir` - Criar pasta\n- `rm` - Remover arquivo\n- `cp` - Copiar\n- `mv` - Mover"
+  }
+]
