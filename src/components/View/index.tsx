@@ -33,7 +33,7 @@ const renderView = ({ handleGoBack, selectedNote }: RenderViewProps) => (
       </div>
     </div>
     <div className="p-5 sm:p-6">
-      <h1 className="flex items-center gap-2 text-1xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600 mb-6">
+      <h1 className="flex items-center gap-2 text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600 mb-6">
         <Sparkles className="w-6 h-6 text-purple-500" />
         {selectedNote?.title}
       </h1>

@@ -142,7 +142,7 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100">
-      <div className="container mx-auto px-4 py-8 sm:py-8 max-w-4xl flex-1">
+      <div className="container mx-auto px-4 py-8 sm:py-12 max-w-4xl flex-1">
         {currentView === "list" && renderList()}
         {currentView === "view" && (
           <RenderView handleGoBack={handleGoBack} selectedNote={selectedNote} />
