@@ -1,10 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { Search, PlusCircle } from "lucide-react";
-import notesData from "./notes.json";
 import RenderView from "./components/View";
 import { renderHeader } from "./components/Header";
 import RenderCreate from "./components/Create";
 import { RenderFooter } from "./components/Footer";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "./firebase";
+import { normalizeText } from "./utils/normalizeText";
+import Loading from "./components/Loading";
 
 interface Note {
   id: number;
@@ -20,6 +23,7 @@ function App() {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [currentView, setCurrentView] = useState<View>("list");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -29,19 +33,38 @@ function App() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const filterNotes = useCallback(() => {
+  const filterNotes = useCallback(async () => {
     if (!debouncedSearch.trim()) {
       setFilteredNotes([]);
+      setIsLoading(false);
       return;
     }
 
-    const searchLower = debouncedSearch.toLowerCase();
-    const filtered = notesData.filter(
-      (note) =>
-        note.title.toLowerCase().includes(searchLower) ||
-        note.content.toLowerCase().includes(searchLower)
-    );
-    setFilteredNotes(filtered);
+    setIsLoading(true);
+
+    const searchLower = normalizeText(debouncedSearch);
+
+    try {
+      const notesRef = collection(db, "notes");
+      const querySnapshot = await getDocs(notesRef);
+
+      const filtered = querySnapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          title: doc.data().title,
+          titleLower: doc.data().titleLower,
+          content: doc.data().content,
+        }))
+        .filter((note) =>
+          normalizeText(note?.titleLower).includes(searchLower)
+        ) as unknown as Note[];
+
+      setFilteredNotes(filtered);
+    } catch {
+      alert("Erro ao buscar notas!");
+    } finally {
+      setIsLoading(false);
+    }
   }, [debouncedSearch]);
 
   useEffect(() => {
@@ -60,7 +83,7 @@ function App() {
         <div className="relative flex-1">
           <input
             type="text"
-            placeholder="Buscar notas..."
+            placeholder="Buscar notas por título..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full px-4 py-2.5 sm:py-3 pl-10 rounded-lg border border-gray-700/50 bg-gray-800/50 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-gray-100 placeholder-gray-500"
@@ -78,15 +101,29 @@ function App() {
           <span>Nova Nota</span>
         </button>
       </div>
-
-      {filteredNotes.length > 0 && (
+      {isLoading ? (
+        <Loading />
+      ) : debouncedSearch.trim() && filteredNotes.length === 0 ? (
+        <p className="text-gray-400 text-center py-8">
+          Nenhuma nota encontrada.
+        </p>
+      ) : filteredNotes.length > 0 ? (
         <div className="space-y-3">
           {filteredNotes.map((note) => (
             <div
+              tabIndex={0}
               key={note.id}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  setSelectedNote(note);
+                  setCurrentView("view");
+                  setSearchTerm("");
+                }
+              }}
               onClick={() => {
                 setSelectedNote(note);
                 setCurrentView("view");
+                setSearchTerm("");
               }}
               className="group bg-gray-800/50 backdrop-blur-sm p-5 rounded-lg border border-gray-700/50 hover:border-blue-500/50 transition-all cursor-pointer hover:shadow-lg hover:shadow-blue-500/10"
             >
@@ -99,13 +136,13 @@ function App() {
             </div>
           ))}
         </div>
-      )}
+      ) : null}{" "}
     </>
   );
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100">
-      <div className="container mx-auto px-4 py-8 sm:py-12 max-w-4xl flex-1">
+      <div className="container mx-auto px-4 py-8 sm:py-6 max-w-4xl flex-1">
         {currentView === "list" && renderList()}
         {currentView === "view" && (
           <RenderView handleGoBack={handleGoBack} selectedNote={selectedNote} />

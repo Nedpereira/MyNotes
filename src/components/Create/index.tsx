@@ -1,18 +1,30 @@
+import { addDoc, collection } from "firebase/firestore";
 import { BookText, ChevronLeft, HelpCircle, Save } from "lucide-react";
 import { useState } from "react";
+import { db } from "../../firebase";
+import { normalizeText } from "../../utils/normalizeText";
 
 type RenderCreateProps = {
   handleGoBack: React.MouseEventHandler<HTMLButtonElement>;
 };
 
 const renderCreate = ({ handleGoBack }: RenderCreateProps) => {
-  const [newNote, setNewNote] = useState({ title: "", content: "" });
+  const [newNote, setNewNote] = useState({ title: "", content: "", code: "" });
   const [showTooltip, setShowTooltip] = useState(false);
 
-  const handleCreateNote = () => {
-    console.log("Creating note:", newNote);
-    setNewNote({ title: "", content: "" });
-    handleGoBack;
+  const handleCreateNote = async () => {
+    try {
+      await addDoc(collection(db, "notes"), {
+        title: newNote.title,
+        titleLower: normalizeText(newNote.title),
+        content: newNote.content,
+        code: newNote.code,
+      });
+      setNewNote({ title: "", content: "", code: "" });
+      handleGoBack;
+    } catch {
+      alert("Erro ao criar nota!");
+    }
   };
 
   return (
@@ -41,6 +53,22 @@ const renderCreate = ({ handleGoBack }: RenderCreateProps) => {
         <div className="space-y-5">
           <div>
             <label
+              htmlFor="code"
+              className="block text-sm font-medium text-gray-300 mb-1.5"
+            >
+              Código de Acesso
+            </label>
+            <input
+              type="text"
+              id="code"
+              value={newNote.code}
+              onChange={(e) => setNewNote({ ...newNote, code: e.target.value })}
+              className="w-full px-3 py-2 rounded-lg border border-gray-700/50 bg-gray-800/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-gray-100"
+              placeholder="Digite o código de acesso..."
+            />
+          </div>
+          <div>
+            <label
               htmlFor="title"
               className="block text-sm font-medium text-gray-300 mb-1.5"
             >
@@ -58,64 +86,7 @@ const renderCreate = ({ handleGoBack }: RenderCreateProps) => {
             />
           </div>
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label
-                htmlFor="content"
-                className="block text-sm font-medium text-gray-300"
-              >
-                Conteúdo (Markdown)
-              </label>
-              <div className="relative">
-                <button
-                  onMouseEnter={() => setShowTooltip(true)}
-                  onMouseLeave={() => setShowTooltip(false)}
-                  className="text-gray-400 hover:text-blue-400 transition-colors"
-                >
-                  <HelpCircle size={18} />
-                </button>
-                {showTooltip && (
-                  <div className="absolute right-0 w-72 sm:w-80 p-4 mt-2 bg-gray-900/95 backdrop-blur-sm rounded-lg border border-gray-700/50 shadow-xl z-10">
-                    <h3 className="text-sm font-semibold text-gray-200 mb-2">
-                      Guia Rápido de Markdown
-                    </h3>
-                    <div className="space-y-2 text-sm text-gray-300">
-                      <p>
-                        <code className="text-blue-400"># Título</code> - Título
-                        principal
-                      </p>
-                      <p>
-                        <code className="text-blue-400">## Subtítulo</code> -
-                        Subtítulo
-                      </p>
-                      <p>
-                        <code className="text-blue-400">**texto**</code> - Texto
-                        em negrito
-                      </p>
-                      <p>
-                        <code className="text-blue-400">*texto*</code> - Texto
-                        em itálico
-                      </p>
-                      <p>
-                        <code className="text-blue-400">[link](url)</code> -
-                        Link
-                      </p>
-                      <p>
-                        <code className="text-blue-400">- item</code> - Item de
-                        lista
-                      </p>
-                      <p>
-                        <code className="text-blue-400">`código`</code> - Código
-                        inline
-                      </p>
-                      <p>
-                        <code className="text-blue-400">```código```</code> -
-                        Bloco de código
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+            <div className="flex items-center justify-between mb-1.5"></div>
             <textarea
               id="content"
               value={newNote.content}
@@ -125,6 +96,83 @@ const renderCreate = ({ handleGoBack }: RenderCreateProps) => {
               className="w-full h-44 px-3 py-2 rounded-lg border border-gray-700/50 bg-gray-800/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-gray-100 font-mono text-sm"
               placeholder="Digite o conteúdo da nota em markdown..."
             />
+            <div className="flex flex-col items-start mt-2">
+              <button
+                onClick={() => setShowTooltip(!showTooltip)}
+                className="flex gap-1 text-sm text-blue-500 hover:text-blue-400 transition-colors"
+              >
+                <HelpCircle className="w-4 h-4" />
+                {showTooltip ? "Ocultar Guia" : "Mostrar Guia"}
+              </button>
+              {/* Seção do Guia Rápido de Markdown */}
+              {showTooltip && (
+                <div className="p-6 w-full bg-gray-900/95 rounded-lg border border-gray-700/50">
+                  <h3 className="text-sm font-semibold text-gray-200 mb-2">
+                    Guia Rápido de Markdown
+                  </h3>
+                  <div className="space-y-2 text-sm text-gray-300">
+                    <p>
+                      <code className="text-blue-400"># Título</code> - Título
+                      principal
+                    </p>
+                    <p>
+                      <code className="text-blue-400">## Subtítulo</code> -
+                      Subtítulo
+                    </p>
+                    <p>
+                      <code className="text-blue-400">**texto**</code> - Texto
+                      em negrito
+                    </p>
+                    <p>
+                      <code className="text-blue-400">*texto*</code> - Texto em
+                      itálico
+                    </p>
+                    <p>
+                      <code className="text-blue-400">[link](url)</code> - Link
+                    </p>
+                    <p>
+                      <code className="text-blue-400">- item</code> - Item de
+                      lista
+                    </p>
+                    <p>
+                      <code className="text-blue-400">`código`</code> - Código
+                      inline
+                    </p>
+                    <p>
+                      <code className="text-blue-400">```código```</code> -
+                      Bloco de código
+                    </p>
+                    <p className="mt-4 font-semibold">Dicas importantes:</p>
+                    <ul className="list-disc list-inside">
+                      <li>Use uma linha em branco para separar parágrafos.</li>
+                      <li>
+                        Use dois espaços no final da linha para quebrar a linha.
+                      </li>
+                      <li>
+                        Certifique-se de que listas e cabeçalhos tenham espaços
+                        adequados.
+                      </li>
+                    </ul>
+                    <p className="mt-4 font-semibold">Exemplo completo:</p>
+                    <pre className="bg-gray-800 p-2 rounded text-xs">
+                      {`# Título
+
+Este é um parágrafo.
+
+- Item 1  
+  Subitem 1
+- Item 2
+
+[Visite o Google](https://www.google.com)
+
+\`\`\`javascript
+console.log("Olá, mundo!");
+\`\`\``}
+                    </pre>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
           <div className="flex justify-end">
             <button
